@@ -1,24 +1,22 @@
 #Main Conference Day 1
-
 ##Vorrede
 ###Sebastian Meyen
-* Neuigkeiten Java: neuer Releasezyklus nach Java 9 (Jigsaw)                                     Í
+* Neuigkeiten Java: neuer Releasezyklus nach Java 9 (Jigsaw)
 * Java 18.3, Java 18.9, Java 19.3...
 * Tempo reinbringen, zeitbasiert releasen (Weil wir's können)
-
 * neue Art der ~~Software~~Produktentwicklung
-	* Zitat Werner Vogels (CTO AWS)(Cessna -> 737 -> 747 -> A380)
-	* MVP Spotify
-	* Uber: Ansatz vorhandene Komponenten zusammenstecken (Marktwert bei ca. 60 Mrd. US$)
-		* keine Fahrzeuge
-		* nur Software und Marketing / Kundenservice
-		* Devices und Dienste sind vorhanden
-		* Messaging von Google
-		* Payment von Braintree SaaS
-		* Billing von Mandrill
-		* Hosting AWS
-		* wenn im klassischen Sinne eigenentwickelt, würden heute noch Mitarbeiter gesucht
-		* heute unmöglich im klassischen Sinne so ein Tempo zu entfachen
+  * Zitat Werner Vogels (CTO AWS)(Cessna -> 737 -> 747 -> A380)
+  * MVP Spotify
+  * Uber: Ansatz vorhandene Komponenten zusammenstecken (Marktwert bei ca. 60 Mrd. US$)
+    * keine Fahrzeuge
+    * nur Software und Marketing / Kundenservice
+    * Devices und Dienste sind vorhanden
+    * Messaging von Google
+    * Payment von Braintree SaaS
+    * Billing von Mandrill
+    * Hosting AWS
+    * wenn im klassischen Sinne eigenentwickelt, würden heute noch Mitarbeiter gesucht
+    * heute unmöglich im klassischen Sinne so ein Tempo zu entfachen
 * Wandel: Tonfilm kam - Besorgte Bürger, Musiker, Künstler
 * Die Welt verändert sich
 * Disruption hat es immer gegeben an vielen Stellen - nur die Einschläge sind heftiger
@@ -83,3 +81,37 @@ Fazit
 * Dezentrale Tests und Integration sind guter Master Schutz
 * Pull Requests verbessern Kommunikation u. Code Qualität
 * FB u. CI ein Weg den Master fehlerfrei zu halten ohne auf Vorteile automatisierter Testpraktiken zu verzichten 
+
+##API-Design: Vorsicht vor der Versioning Hölle
+###Arne Limburg (OPEN KNOWLEDGE)
+* API/Schnittstellengestaltung bereits seit 10 Jahren
+* rückt durch Microservices noch stärker in den Fokus
+* Fachlichkeit entwickelt sich weiter also auch die Schnittstelle!
+* nicht immer gleichzeitig Server und Client aktualisierbar
+    * Schnittstellen müssen abwärtskompatibel sein !
+    * Herausforderung die stärker in die Köpfe muss
+
+Semantic Versioning
+* Major Version bietet gewisses Featureset mit dem man abwärtskompatibel innerhalb dieser Version bleibt
+* guter Zyklus für nächste Major Version mit der man alte Clients nicht mehr bedient?
+
+Erster Schritt: 
+* alte Clients in die Lage versetzen auf neue Version zu aktualisieren
+    * bei Design der Schnittstelle den Clients mitgeben wie sie die neue Schnittstelle bedienen müssen
+    * genügend Zeit
+    * Idealfall Clients teilen mit wann sie die neue Schnittstelle umgesetzt haben (Consumer Driven Contracts)
+    * nicht immer möglich
+* Server so gestalten, dass er auch alte Clients unterstützt (aber alte Zöpfe auch mal abschneiden)
+* Arnes Pattern: Zwei Major Versionen abwärts unterstützen (1 bis 2 Jahre für nächste Version) 
+
+API: Hohes Maß an Disziplin für beide Seiten
+* Tolerant Reader Pattern: 
+    * Client tolerant gegenüber gewissen API-Änderungen (d.h. neue Attribute werden ignoriert)
+    * Server muss dann auch beide Varianten verarbeiten können und anbieten
+* Magnanimous Writer Pattern
+    * Umbenennen von Attributen durch Kopieren
+    * nicht das Alte entfernen
+
+Fazit
+* in der Praxis fehlen noch Konzepte die man Entwicklern an die Hand geben kann
+* mit Microservices wird das aber kommen, da notwendig 
