@@ -115,3 +115,59 @@ API: Hohes Maß an Disziplin für beide Seiten
 Fazit
 * in der Praxis fehlen noch Konzepte die man Entwicklern an die Hand geben kann
 * mit Microservices wird das aber kommen, da notwendig 
+
+##Data- und Event-driven Microservices mit Apache Kafka
+###Mike Wiesner (MHP)
+* kein Broker wie ActiveMQ, RabbitMQ
+* nicht Message-basiert sondern arbeitet mit Streams
+* keine Unterscheidung zwischen Online/Offline-Consumer
+* keine technische Lastverteilung
+* einfache Replikation/Administration
+* TOPIC: Stream von Nachrichten
+* PARTITIONEN: fachliche Lastverteilung
+* CQRS: Command -> Query Model
+
+##Mit Consumer-driven Contracts aus der Integrationshölle entkommen
+###Tom Hombergs
+* Ziel: Testen der Schnittstellen und dabei CI konform bleiben
+* Schnittstellen nicht per E2E-Test testen sondern per Integrationstest
+
+<<consumerdriven1.jpg>>
+
+* im Contract ist die Interaktion für Consumer und Provider definiert
+* über einen Contract Broker zentral zugreifbar
+* Spring Contract (nur JVM)
+* PACT
+
+##Microservices Patterns und Antipatterns
+###Stefan Tilkov
+* Gefühl Microservices sind ein Allheilmittel für sämtliche Probleme
+* manchmal eine gute Lösung
+* Muster zum Erfolg, Warnsignale vor falscher Abbiegung
+
+Pattern
+  * Microservices¹
+  * Evolutionary Architecture
+  * Autonomous Cells
+  * FaaS
+  * µSOA
+  * Distributed Domain-driven Design
+  * SCS (Self-contained System)
+  * Monolith
+  
+Antipattern
+  * Distributed Monolith (a.k.a. "Microservices Gones Bad")²
+  * Decoupling Illusion³⁴
+  * Micro Platform
+  * Entity Service
+  * Anemic Service
+  * Unjustified Re-Use
+  * Domain-last Approach
+  * Frontend Monolith
+  
+Empfehlungen
+  
+  1. Be careful with silver bullets
+  2. Prioritize intended benefits, choose matching solutions
+  3. Create evolvable structures
+  
