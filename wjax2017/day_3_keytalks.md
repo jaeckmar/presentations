@@ -50,7 +50,21 @@ FlameGraphs
   * Flat View: top in methods with percentage but you need context!
   * Tree View: context quickly run out of mental space -> much space because of deep stack
   * FlameGraph: big picture, birds eye view
-* tool chain
+
+FlameGraph
+* profiler -> stack traces
+* stacktraces collapsed to a string (hackable)
+* collapsed stacks to SVG (super hackable)
+* Y-Achse: 
+  * Tiefe des Stacks
+  * Top Methoden sind Blätter, Bottom sind Wurzelmethoden des Stacks
+* X-Achse:
+  * Anzahl der Samples
+  * breitere Frames == mehr Samples == wo die "Zeit" verbraucht wird
+  * Wurzeln sind breit, aufgerufene Methoden sind schmaler, Top Methoden sind Spitzen
+* Farbe ist kontextabhängig
+
+
 
 ##Road to Continuous Delivery
 ###Falko Dautel
