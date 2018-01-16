@@ -63,8 +63,24 @@ FlameGraph
   * breitere Frames == mehr Samples == wo die "Zeit" verbraucht wird
   * Wurzeln sind breit, aufgerufene Methoden sind schmaler, Top Methoden sind Spitzen
 * Farbe ist kontextabhängig
+* Man schaut bei FlameGraphs nach Plateaus an der Spitze um Bottlenecks zu finden
 
+JVisualVM-Profiler
+* kein guter Profiler, da Samples nur an Safepoints erstellt werden
+* Safepoint Anwendung stoppt (Threads), damit die JVM etwas tun kann
+* Jeder Sample ist eine Safepoint Operation
+* !Jedes Sample enthält alle Threads
 
+JMC/Honest-Profiler
+* kein Safepoint Beiwerk
+* nur Java Stack
+* hat Blind Spots: GC/Deopt/Runtime Stubs  
+
+Linux Perf (perf_events)
+* System profiler
+* Userspace + Kernel
+* Standard tool
+* now works with java
 
 ##Road to Continuous Delivery
 ###Falko Dautel
