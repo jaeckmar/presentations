@@ -31,6 +31,10 @@ Beispiel: T findFirst() vs. Optional<T> findFirst()
 Funktional vs. Imperativ
 * Was besser ist, bleibt Geschmackssache
 
+##The Streaming Transformation
+###Ben Stopford
+~not interesting enough~
+
 ##Exploring Java Performance Flame Graphs
 ###Nitsan Wakart
 https://vimeo.com/233671554
@@ -84,6 +88,8 @@ Linux Perf (perf_events)
 
 ##Road to Continuous Delivery
 ###Falko Dautel
+~not interesting enough~
 
 ##Von Jurassic Park zu Microservices – Wie modernisiert man Altanwendungen?
 ###Sven Ruppert
+~slideshare~
