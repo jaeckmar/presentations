@@ -92,4 +92,55 @@ Linux Perf (perf_events)
 
 ##Von Jurassic Park zu Microservices – Wie modernisiert man Altanwendungen?
 ###Sven Ruppert
-~slideshare~
+* Start vor 3 Jahren
+* Codebasis:
+  * über 13 Jahre alt
+  * keine Testabdeckung
+  * Code Lords
+  * ca. 15 % bald in Rente
+  * über 50% seit ca. 15 Jahren in der Firma
+  * nur Studenten werden rekrutiert
+  * Entwickler lernen Java an diesem Projekt
+* Start 
+  * durch Herauslösen einer kleinen Insel
+  * Vergrößern dieser Insel 
+  * ein Team bilden
+  * Vertrauen schaffen durch lauffähiges fertig abgenommenes Teilstück, das funktional ist!
+* Veränderung der Arbeitsweise
+  * von Überall zu "deiner" Zeit
+  * 20% für Play and Try
+  * Closed Source wurde Open Source gegenübergestellt
+  * Umgebung verändern
+    * Messenger statt Mails
+    * Remote Meetings mit Zoom
+    * Remote Pair Programming
+    * Asynchron Arbeiten
+    * Zu der Zeit arbeiten die am Besten zu dir passt (Arbeitszeitbeispiel unterbrochener Tagesablauf mit 6h Schlaf ;)
+  * Open Source vs Closed
+    * viel infrastrukturcode -> damit verdient die Firma kein Geld
+    * Teilung der Code-Basis in code base und dev. environment
+  * Veränderung führt zu Reaktionen
+    * um die Entwickler niht zu verlieren -> Einteilung in Kategorien
+    * Consultants (Play and Throw away)
+    * Core Developers (collect and clean)
+    * LTS Developers (keep alive)
+    * Ausrichtung der Inzentivierung auf diese Gruppen
+    * Consultants: amount of hours paid by the customer
+    * Core Devs: rated on hours of a stable system
+    * LTS: fixed income - bonus on Change Requests
+    * Ebenfalls Anpassung des Entwicklungsparadigmas: Scrum (customer driven) vs. Kanban (roadmap driven)
+  * Knowledge Sharing
+    * verschiedene Slack-Channels die Links zu folgendem enthalten
+    * Hacking Sessions
+    * Articles / Blogs
+    * Screencasts
+    * Refactoring Sessions
+  * TDD with jUnit
+    * Codebase > 13 Jahre
+    * wieviel Testcode ist genug?
+    * Methode muss gefunden werden, um "gute" Tests zu schreiben
+    * Mutations Testsing: Die Maschine findet die Ziele
+    * Eine Mutation ist eine kleine Änderung, so klein, dass es schon zu einem Defekt führt
+    * ist ein Addon zum normalen jUnit TDD
+    * unterstützung durch Tools gegeben
+    * führt zum Cleaner Code
