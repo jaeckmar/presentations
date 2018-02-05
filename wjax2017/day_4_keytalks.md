@@ -73,9 +73,22 @@ Pruning
 
 ##Java Flight Recorder - So funktioniert das Java-Profiling-Tool
 ###Wolfgang Weigend
+~not interesting enough~
 
 ##Testgetriebene Entwicklung bei funktionalem Code - Alles gleich oder alles anders?
 ###Johannes Link
+~not interesting enough~
 
 ##Visuelle Regressionstests im Web als praktikable Alternative zu E2E-Tests?!
 ###Frederik Martin
+~interessant aber nicht aufbereitbar~
+* sollen dem Entwickler erleichtern sichere Aussagen zur Qualität im FE-Bereich
+* Screenshots von Oberflächen werden mit Referenzsatz verglichen
+* CSS- und Templateregressionen werden erkannt
+* sind mit DOM-basierten Tests nicht zu erkennen.
+  * ungewollte Überschreibungen von CSS-Klassen
+  * Grafiken, die nicht mehr sichtbar sind
+  * Elemente die übereinander liegen und dadurch nicht mehr erreichbar sind
+* Testverfahren schließt Lücke bei automatisierten Tests
+* was können sie leisten
+* warum bisher noch wenig eingesetzt
