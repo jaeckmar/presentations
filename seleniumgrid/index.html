@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+	<meta charset="UTF-8">
+	<title>HACK-71 - Optimierung und Stabilisierung Selenium Tests</title>
+
+	<meta name="description" content="Zentralisierung und Optimieren des PEG Selenium Grids">
+	<meta name="author" content="Rick Scheffel und Mario Jäckel">
+
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+	<link rel="stylesheet" href="css/reveal.css">
+	<link rel="stylesheet" href="css/theme/black.css" id="theme">
+
+	<!-- Theme used for syntax highlighting of code -->
+	<link rel="stylesheet" href="lib/css/zenburn.css">
+
+	<!-- Printing and PDF exports -->
+	<script>
+		var link = document.createElement('link');
+		link.rel = 'stylesheet';
+		link.type = 'text/css';
+		link.href = window.location.search.match(/print-pdf/gi) ? 'css/print/pdf.css' : 'css/print/paper.css';
+		document.getElementsByTagName('head')[0].appendChild(link);
+	</script>
+
+	<!--[if lt IE 9]>
+	<script src="lib/js/html5shiv.js"></script>
+	<![endif]-->
+</head>
+<body>
+<div class="reveal">
+	<div class="slides">
+		<section>
+			<h1>HACK-71</h1>
+			<h3>Optimierung und Stabilisierung der Selenium Tests</h3>
+		</section>
+
+		<!-- Altes Selenium Setup-->
+		<section>
+			<section>
+				<h2>Bisheriges Selenium Setup</h2>
+				<img data-src="img/jenkins_grid.png" class="fragment">
+				<ul>
+					<li class="fragment">Jenkins<span class="fragment"> -> Hub</span></li>
+					<li class="fragment">Workstations<span class="fragment"> -> Nodes</span></li>
+				</ul>
+			</section>
+		</section>
+
+		<!-- Nachteile -->
+		<section>
+			<section>
+				<h2>Nachteile<span class="fragment">: Jenkins</span></h2>
+				<ul>
+					<li class="fragment">Update-Zyklus vom Plugin-Hersteller abhängig <br><span class="fragment">(FF 54.0)</span></li>
+					<li class="fragment">Jenkins Einfluss beim Update</li>
+					<li class="fragment">Ressourcen des Jenkins benutzt</li>
+				</ul>
+			</section>
+			<section>
+				<h2>Nachteile: Stabilität</h2>
+				<ul>
+					<li class="fragment">Wer beteiligt sich am Grid? <br><span class="fragment">(WS, NB, NUC)</span></li>
+					<li class="fragment">Neustart von Workstations??</li>
+					<li class="fragment">Zugriff auf Nodes?</li>
+				</ul>
+			</section>
+			<section>
+				<h2>Nachteile: Skalierbarkeit</h2>
+				<ul>
+					<li class="fragment">begrenzt auf # Workstations, NBs, NUCs</li>
+					<li class="fragment">komplizierte Steuerung der Nodes</li>
+					<li class="fragment">dadurch Nightly Stages nicht kombinierbar <br>(kein weiterer Performancegewinn)</li>
+					<li class="fragment">Ressourcenverbrauch schwer messbar</li>
+				</ul>
+			</section>
+		</section>
+
+		<!-- Dediziertes Grid -->
+		<section>
+			<h2>Dediziertes Selenium Grid</h2>
+			<p>Mithilfe von Docker-Swarm ist es <span class="fragment highlight-red">sehr einfach</span> auf <span class="fragment highlight-red">dedizierten</span> VMs ein
+				<span class="fragment highlight-red">unabhängiges</span> Selenium Grid aufzusetzen.</p>
+		</section>
+		<section>
+			<h2>Ziele</h2>
+			<ol>
+				<li class="fragment fade-in-then-semi-out">die Stabilität der Tests erhöhen</li>
+				<li class="fragment fade-in-then-semi-out">die Ausführung der Tests beschleunigen</li>
+				<li class="fragment fade-in-then-semi-out">Abhängigkeit zu Jenkins/Jenkins-Plugin auflösen</li>
+				<li class="fragment fade-in-then-semi-out">Aktualität der Grid-Komponenten gewährleisten & vereinfachen</li>
+			</ol>
+		</section>
+		<section>
+			<section>
+				<h2>3 Zutaten</h2>
+				<ol>
+					<li class="fragment fade-in-then-semi-out">Dedizierte VMs mit Docker Swarm</li>
+					<li class="fragment fade-in-then-semi-out">docker-compose.yml (Konfiguration für das Grid)</li>
+					<li class="fragment fade-in-then-semi-out">Skalierungsvorstellung der Nodes</li>
+				</ol>
+			</section>
+			<section>
+				<h3>Dedizierte VMs + Docker Swarm</h3>
+				<div>Initialisierung Docker Swarm
+					<pre><code class="bash" data-trim contenteditable>docker swarm init --advertise-addr &lt;manager-ip&gt;</code></pre>
+				</div>
+				<div class="fragment">Worker hinzufügen
+					<pre><code class="bash" data-trim contenteditable>docker swarm join --token &lt;token&gt;</code></pre>
+				</div>
+			</section>
+			<section>
+				<h3>docker-compose.yml (Konfiguration für das Grid)</h3>
+				<pre><code class="json" data-trim contenteditable>
+version: '3'
+networks:
+  private:
+    driver: overlay
+services:
+  selenium-hub:
+    image: selenium/hub:3.14.0-europium
+    ports:
+    - "4444:4444"
+    deploy:
+      mode: global
+      placement:
+        constraints:
+        - node.role == manager
+    environment:
+    - GRID_BROWSER_TIMEOUT=60000
+    - GRID_TIMEOUT=60000
+    - GRID_MAX_SESSION=40
+    - GRID_CLEAN_UP_CYCLE=60000
+    - GRID_UNREGISTER_IF_STILL_DOWN_AFTER=180000
+    - GRID_NEW_SESSION_WAIT_TIMEOUT=60000
+    networks:
+    - private
+  firefox:
+    image: selenium/node-firefox-debug:3.14.0-europium
+    volumes:
+    - /dev/shm:/dev/shm
+    depends_on:
+    - selenium-hub
+    environment:
+    - HUB_PORT_4444_TCP_ADDR=selenium-hub
+    - HUB_PORT_4444_TCP_PORT=4444
+    - NODE_MAX_SESSION=1
+    entrypoint: bash -c 'SE_OPTS="-host $$HOSTNAME -port 5555" /opt/bin/entry_point.sh'
+    ports:
+    - "5555:5555"
+    deploy:
+      replicas: 1
+    networks:
+    - private
+				</code></pre>
+			</section>
+			<section>
+				<h3>Grid hochfahren + Skalieren</h3>
+				<div>Grid hochfahren
+					<pre><code class="bash" data-trim contenteditable>docker stack deploy -c docker-compose.yml &lt;stack_name&gt;</code></pre>
+				</div>
+				<div class="fragment">Nodes skalieren
+					<pre><code class="bash" data-trim contenteditable>docker service scale &lt;stack_name&gt;_firefox=&lt;#instances&gt;</code></pre>
+				</div>
+			</section>
+		</section>
+
+		<section>
+			<h2>Grid Web-Console</h2>
+			<p>
+				<a href="http://selenium:4444/grid/console" target="_blank">http://selenium:4444/grid/console</a>
+			</p>
+			<div class="fragment">
+				<h2>Swarm Management</h2>
+				<p>
+					<a href="http://selenium:9000/#/services" target="_blank">http://selenium:9000/#/services</a>
+				</p>
+			</div>
+		</section>
+
+		<section>
+
+			<section>
+				<h2>Ergebnisse<span class="fragment">: Stabilität</span></h2>
+				<p class="fragment">Dedizierte Umgebung mit konstanter Anzahl an Nodes</p>
+				<img src="img/checkmark-ok.png" height="75" width="75" style="border: none; background: none" class="fragment">
+			</section>
+
+			<!-- Laufzeit Tests-->
+			<section>
+				<h2>Ergebnisse: Laufzeit</h2>
+				<table class="fragment">
+					<thead>
+					<tr>
+						<th>Grid-Setup</th>
+						<th>Laufzeit</th>
+					</tr>
+					</thead>
+					<tbody>
+					<tr>
+						<td>"Workstation-Grid"</td>
+						<td>ca. 70 bis 90 Minuten (inkl. Deployment)</td>
+					</tr>
+					<tr>
+						<td>"Docker-Swarm-Grid" <br>20 Firefox-Nodes</td>
+						<td>ca. 70 - 90 Minuten (inkl. Deployment)</td>
+					</tr>
+					<tr>
+						<td>"Docker-Swarm-Grid" <br>25 Firefox-Nodes <br>(Parallelisierung aller bestehenden Nightly-Jobs)</td>
+						<td>ca. <span class="fragment highlight-green">40 - 60 Minuten</span> (inkl. Deployment)<br>
+							<div style="text-align: right"><img src="img/checkmark-ok.png" height="75" width="75" style="border: none; background: none;" class="fragment"></div>
+						</td>
+					</tr>
+					</tbody>
+				</table>
+			</section>
+
+			<section>
+				<h2>Ergebnisse: Abhängigkeit/Aktualität</h2>
+				<ul>
+					<li class="fragment">Dediziertes Grid</li>
+					<li class="fragment">Docker Images - SeleniumHQ</li>
+					<li class="fragment">Selenium 3.14.0</li>
+					<li class="fragment">Firefox 62.0</li>
+				</ul>
+				<div style="text-align: center"><img src="img/checkmark-ok.png" height="75" width="75" style="border: none; background: none;" class="fragment"></div>
+
+			</section>
+		</section>
+	</div>
+</div>
+<script src="lib/js/head.min.js"></script>
+<script src="js/reveal.js"></script>
+<script>
+	Reveal.initialize({
+		dependencies: [
+			{
+				src: 'lib/js/classList.js', condition: function () {
+					return !document.body.classList;
+				}
+			},
+			{
+				src: 'plugin/highlight/highlight.js', async: true, callback: function () {
+					hljs.initHighlightingOnLoad();
+				}
+			},
+			{
+				src: 'plugin/zoom-js/zoom.js', async: true
+			}
+		]
+	});
+</script>
+</body>
+</html>
